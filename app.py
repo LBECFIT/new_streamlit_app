@@ -387,6 +387,53 @@ with st.sidebar:
 			
 
 			st.plotly_chart(fig_line_chart,use_container_width=True)
+			
+######################################################
+######################################################
+######################################################
+
+	if selected == 'Outstanding data':
+
+		with box_plot_dataset:
+
+			df_rf3 = pd.read_csv('df_rf3.csv',sep=',')
+			liste_company = list(df_rf3['id_company'].unique())
+
+			cols_name = st.columns((1, 1))
+
+			company = cols_name[0].selectbox('Choose a company',(liste_company))
+
+			df_filtered_company = df_rf3[df_rf3['id_company']==company]
+			liste_kitchen = list(df_filtered_company['kitchen'].unique())
+
+
+			kitchen = cols_name[1].selectbox(
+				'Choose a kitchen',
+				(liste_kitchen)
+
+			)
+
+
+
+			cols_date = st.columns((1, 1))
+
+
+
+			start_date = cols_date[0].date_input(
+				"Select start date",
+				date(2022, 5, 6)
+			)
+
+			end_date = cols_date[1].date_input(
+				"Select end date",
+				date(2022, 5, 6))
+
+			df_box_plot = df_filtered_company[(df_filtered_company['date_waste']<=end_date.strftime("%Y-%m-%d"))&(df_filtered_company['date_waste']>=start_date.strftime("%Y-%m-%d"))&(df_filtered_company['kitchen']==kitchen)]
+
+			fig_box_plot = px.box(df_box_plot, y="weight",color = 'shift' , points = 'all', title = '{} distribution'.format(company),hover_data = ['date_waste'])
+			st.plotly_chart(fig_box_plot,use_container_width=True)
+
+
 
 
 
