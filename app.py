@@ -63,10 +63,10 @@ with st.sidebar:
 			focus_company = st.text_input('Group you want to focus on', 'APAC')
 
 			df_rf3 = pd.read_csv('df_rf3.csv',sep=',')
-      df_rf3['date_waste'] = pd.to_datetime(df_rf3['date_waste']).dt.floor('d')
-      df_rf3 = df_rf3[df_rf3['id_company'].str.startswith(focus_company, na = False)].reset_index()
-      weight_by_company_c = df_rf3.copy()
-      weight_by_company_c = weight_by_company_c.groupby(['id_company', 'date_waste','shift'])['weight'].sum().reset_index()
+		        df_rf3['date_waste'] = pd.to_datetime(df_rf3['date_waste']).dt.floor('d')
+		        df_rf3 = df_rf3[df_rf3['id_company'].str.startswith(focus_company, na = False)].reset_index()
+		        weight_by_company_c = df_rf3.copy()
+		        weight_by_company_c = weight_by_company_c.groupby(['id_company', 'date_waste','shift'])['weight'].sum().reset_index()
 
 			fig = go.Figure()
 
