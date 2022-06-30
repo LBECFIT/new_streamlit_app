@@ -5,8 +5,16 @@ from datetime import date, datetime, timedelta
 
 
 fit_raw_data = pd.read_csv('fit_raw_data.csv',sep=',')
+fit_raw_data['id_company+kitchen']=fit_raw_data['id_company']+'__'+fit_raw_data['kitchen']
+fit_raw_data['stop_date'] = pd.to_datetime(fit_raw_data['stop_date']).dt.floor('d')
+
 df_rf3 = pd.read_csv('df_rf3.csv',sep=',')
+df_rf3['date_waste'] = pd.to_datetime(df_rf3['date_waste']).dt.floor('d')
+
 df_covers = pd.read_csv('df_covers.csv',sep=',')
+df_covers['covers'] = df_covers['covers'].astype(int)
+df_covers['date_waste'] = pd.to_datetime(df_covers['date_waste']).dt.floor('d')
+df_covers['id_company+kitchen']=df_covers['id_company']+'__'+df_covers['kitchen']
 
 
 
