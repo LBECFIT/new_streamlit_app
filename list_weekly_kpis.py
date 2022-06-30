@@ -4,9 +4,9 @@ import numpy as np
 from datetime import date, datetime, timedelta
 
 
-fit_raw_data = pd.read_csv('data/fit_raw_data.csv',sep=',')
-df_rf3 = pd.read_csv('data/df_rf3.csv',sep=',')
-df_covers = pd.read_csv('data/df_covers.csv',sep=',')
+fit_raw_data = pd.read_csv('fit_raw_data.csv',sep=',')
+df_rf3 = pd.read_csv('df_rf3.csv',sep=',')
+df_covers = pd.read_csv('df_covers.csv',sep=',')
 
 
 
