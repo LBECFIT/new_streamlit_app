@@ -548,6 +548,8 @@ if selected == 'Missing data':
 		df_merged_right.drop(columns=['index__rf3'], inplace=True)
 		df_merged_right.drop(columns=['date_added__covers'], inplace=True)
 		#df_merged_right.drop(columns=['id_covers'], inplace=True)
+		
+		print(df_merged_left)
 
 		###############################
 
