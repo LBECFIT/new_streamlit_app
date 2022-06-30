@@ -720,6 +720,9 @@ if selected == 'Impact Report':
 	list_baseline = [x for x in list_baseline if x not in dates_to_remove]
 
 	################################### FILTERING FIT RAW DATA
+	
+	st.dataframe(df_companies.head())
+	st.dataframe(df_kitchen.head())
 
 
 	df_companies_hbrand = df_companies[df_companies["id_company"].str.startswith(focus_company, na = False)].reset_index(drop=True)
