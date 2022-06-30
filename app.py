@@ -432,6 +432,227 @@ with st.sidebar:
 
 			fig_box_plot = px.box(df_box_plot, y="weight",color = 'shift' , points = 'all', title = '{} distribution'.format(company),hover_data = ['date_waste'])
 			st.plotly_chart(fig_box_plot,use_container_width=True)
+			
+######################################################
+######################################################
+######################################################
+
+
+if selected == 'Missing data':
+
+	with individual_heatmap_dataset:
+
+		df_rf3 = pd.read_csv('df_rf3.csv',sep=',')
+		df_rf3['date_waste'] = pd.to_datetime(df_rf3['date_waste']).dt.floor('d')
+		df_covers = pd.read_csv('df_covers.csv',sep=',')
+		df_covers['date_waste'] = pd.to_datetime(df_covers['date_waste']).dt.floor('d')
+
+
+		liste_company = list(df_rf3['id_company'].unique())
+		cols_name = st.columns((1, 1))
+
+		company = cols_name[0].selectbox('Choose a company',(liste_company))
+
+		liste_kitchen = list(df_rf3[df_rf3['id_company']==company]['kitchen'].unique())
+
+		kitchen = cols_name[1].selectbox(
+			'Choose a kitchen',
+			(liste_kitchen)
+
+		)
+
+
+
+		cols_date = st.columns((1, 1))
+
+
+
+		startdate = cols_date[0].date_input(
+			"Select start date",
+			date(2022, 5, 6)
+		)
+
+		end_date = cols_date[1].date_input(
+			"Select end date",
+			date(2022, 5, 6))
+		
+		st.markdown('<p style="font-family:Courier; color:Black; font-size: 13px;">To keep the table readable, we advise you not to take a date range wider than 3 weeks.</p>',unsafe_allow_html=True)
+
+
+		st.markdown('<p style="font-family:Courier; color:Black; font-size: 15px;">Legend:</p>',unsafe_allow_html=True)
+
+
+		col_info_1, col_info_2, col_info_3,col_info_4 = st.columns(4)
+
+		with col_info_1:
+		    st.markdown(f'<p style="background-color:#F1F1F1;color:#030303;font-size:15px;border-radius:2%;<div style="text-align: center">- : no missing input</p>', unsafe_allow_html=True)
+
+		with col_info_2:
+		    st.markdown(f'<p style="background-color:#F2893C;color:#FFFCF8;font-size:15px;border-radius:2%;">C : cover input missing</p>', unsafe_allow_html=True)
+
+		with col_info_3:
+		    st.markdown(f'<p style="background-color:#EE4D34;color:#030303;font-size:15px;border-radius:2%;"> W : weight input missing </p>', unsafe_allow_html=True)
+
+
+		with col_info_4:
+		    st.markdown(f'<p style="background-color:#A8A8A8;color:#FFFCF8;font-size:15px;border-radius:2%;"> X : both inputs missing</p>', unsafe_allow_html=True)
+
+		if (end_date-startdate).days > 21:
+			st.markdown('<p style="font-family:Courier; color:Red; font-size: 15px;">Careful, your date range is too wide, you should lower it, otherwise the table will not be easily readable.</p>',unsafe_allow_html=True)
+
+
+		df_covers = df_covers[df_covers['id_company'].str.startswith(company, na = False)].reset_index()
+		df_covers = df_covers[df_covers['kitchen'].str.startswith(kitchen, na = False)].reset_index()
+		df_rf3 = df_rf3[df_rf3['id_company'].str.startswith(company, na = False)].reset_index()
+		df_rf3 = df_rf3[df_rf3['kitchen'].str.startswith(kitchen, na = False)].reset_index()
+
+		df_rf3['date_waste'] = pd.to_datetime(df_rf3['date_waste']).dt.date
+		df_covers['date_waste'] = pd.to_datetime(df_covers['date_waste']).dt.date
+
+		###############################
+
+		df_merged_left = pd.merge(df_rf3, df_covers, how='left', 
+	    left_on=['id_company', 'date_waste', 'kitchen', 'shift'],
+	    right_on=['id_company', 'date_waste', 'kitchen', 'shift'],
+	    suffixes=("__rf3", "__covers"),
+	    copy=True
+		)
+		df_merged_left.drop(columns=['id_waste'], inplace=True)
+		df_merged_left.drop(columns=['date_added__rf3'], inplace=True)
+		df_merged_left.drop(columns=['Unnamed: 0__rf3'], inplace=True)
+		df_merged_left.drop(columns=['Unnamed: 0__covers'], inplace=True)
+		df_merged_left.drop(columns=['id_user__covers'], inplace=True)
+		df_merged_left.drop(columns=['id_user__rf3'], inplace=True)
+
+		df_merged_left.drop(columns=['index__covers'], inplace=True)
+		df_merged_left.drop(columns=['index__rf3'], inplace=True)
+
+		df_merged_left.drop(columns=['date_added__covers'], inplace=True)
+		df_merged_left.drop(columns=['id_covers'], inplace=True)
+
+		###############################
+
+		df_merged_right = pd.merge(df_rf3, df_covers, how='right', 
+	    left_on=['id_company', 'date_waste', 'kitchen', 'shift'],
+	    right_on=['id_company', 'date_waste', 'kitchen', 'shift'],
+	    suffixes=("__rf3", "__covers"),
+	    copy=True
+		)
+		df_merged_right.drop(columns=['id_waste'], inplace=True)
+		df_merged_right.drop(columns=['date_added__rf3'], inplace=True)
+		df_merged_right.drop(columns=['Unnamed: 0__rf3'], inplace=True)
+		df_merged_right.drop(columns=['Unnamed: 0__covers'], inplace=True)
+		df_merged_right.drop(columns=['id_user__covers'], inplace=True)
+		df_merged_right.drop(columns=['id_user__rf3'], inplace=True)
+		df_merged_right.drop(columns=['index__covers'], inplace=True)
+		df_merged_right.drop(columns=['index__rf3'], inplace=True)
+		df_merged_right.drop(columns=['date_added__covers'], inplace=True)
+		df_merged_right.drop(columns=['id_covers'], inplace=True)
+
+		###############################
+
+		df_missing_covers = df_merged_left[df_merged_left['covers'].isna()]
+		df_missing_weight = df_merged_right[df_merged_right['weight'].isna()]
+
+		df_missings = pd.concat([df_missing_covers,df_missing_weight])
+		df_missings = df_missings.drop_duplicates()
+
+		df_missings.loc[df_missings['weight'].isnull(),'heatmap'] = 0.25
+		df_missings.loc[df_missings['covers'].isnull(),'heatmap'] = 1
+		df_missings.loc[(df_missings['weight'].notnull())&(df_missings['covers'].notnull()), 'heatmap'] = 0.0
+
+		df_missings.loc[df_missings['weight'].isnull(),'heatmap_text'] = 'W'
+		df_missings.loc[df_missings['covers'].isnull(),'heatmap_text'] = 'C'
+		df_missings.loc[(df_missings['weight'].notnull())&(df_missings['covers'].notnull()), 'heatmap_text'] = 'OK'
+
+		###############################
+
+		df_all_merged = pd.concat([df_merged_left,df_merged_right])
+		df_all_merged.loc[df_all_merged['weight'].isnull(),'heatmap'] = 0.25
+		df_all_merged.loc[df_all_merged['covers'].isnull(),'heatmap'] = 1
+		df_all_merged.loc[(df_all_merged['weight'].notnull())&(df_all_merged['covers'].notnull()), 'heatmap'] = 0.0
+
+		df_all_merged.loc[df_all_merged['weight'].isnull(),'heatmap_text'] = 'W'
+		df_all_merged.loc[df_all_merged['covers'].isnull(),'heatmap_text'] = 'C'
+		df_all_merged.loc[(df_all_merged['weight'].notnull())&(df_all_merged['covers'].notnull()), 'heatmap_text'] = 'OK'
+
+		###############################
+
+		x = ['Breakfast','Lunch','Dinner']
+
+
+		y = [startdate.strftime("%b-%-d")]
+		for i in range((end_date-startdate).days):
+		    date = startdate+timedelta(days=i+1)
+		    y.append(date.strftime("%b-%-d"))
+
+		z = np.zeros((len(y),len(x)))
+		z_text = [['-' for i in range(len(x))] for j in range(len(y))]
+
+		###############################
+
+		df_all_merged['date_waste'] = pd.to_datetime(df_all_merged['date_waste']).dt.floor('d')
+		df_all_merged_filtered = df_all_merged[(df_all_merged['date_waste']>=startdate.strftime("%Y-%m-%d"))]
+		df_all_merged_filtered = df_all_merged_filtered[(df_all_merged_filtered['date_waste']<=end_date.strftime("%Y-%m-%d"))]
+		df_all_merged_filtered['date_waste'] = df_all_merged_filtered['date_waste'].dt.strftime("%b-%-d")
+
+		df_missings['date_waste'] = pd.to_datetime(df_missings['date_waste']).dt.floor('d')
+		df_missings_filtered = df_missings[df_missings['date_waste']>=startdate.strftime("%Y-%m-%d")]
+		df_missings_filtered = df_missings_filtered[df_missings_filtered['date_waste']<=end_date.strftime("%Y-%m-%d")]
+		df_missings_filtered['date_waste'] = df_missings_filtered['date_waste'].dt.strftime("%b-%-d")
+
+		###############################
+
+		for j in range(len(x)) :
+		    df_all_merged_shift = df_all_merged_filtered[df_all_merged_filtered['shift']==x[j]]
+		    dates_table = list(df_all_merged_shift['date_waste'].unique())
+		    missing_dates = list(set(y) - set(dates_table))
+		    for elt in range(len(missing_dates)) :
+		        #print(z_text)
+		        position_shift = x.index(x[j])
+		        position_date = y.index(missing_dates[elt])
+		        z[position_date,position_shift]=0.5
+		        z_text[position_date][position_shift]='X'
+
+		###############################
+
+
+		liste_shift = list(df_missings_filtered['shift'])
+		liste_date = list(df_missings_filtered['date_waste'])
+
+		liste_heatmap = list(df_missings_filtered['heatmap'])
+		liste_heatmap_text = list(df_missings_filtered['heatmap_text'])
+
+		liste_shift = list(df_missings_filtered['shift'])
+		liste_date = list(df_missings_filtered['date_waste'])
+
+		liste_heatmap = list(df_missings_filtered['heatmap'])
+		liste_heatmap_text = list(df_missings_filtered['heatmap_text'])
+
+
+		for elt in range(len(liste_shift)) : 
+		    position_shift = x.index(liste_shift[elt])
+		    position_date = y.index(liste_date[elt])
+		    z[position_date,position_shift]=liste_heatmap[elt]
+		    z_text[position_date][position_shift]=liste_heatmap_text[elt]
+
+		z = z.tolist()
+		import plotly.figure_factory as ff
+
+
+
+		color_schemes = [
+		    ['#F1F1F1','#F1F1F1','#F1F1F1'],
+		    ['#F14D29','#F14D29','#F14D29'],
+		    ['#A8A8A8','#A8A8A8','#A8A8A8'],
+		    ['#FF8A00','#FF8A00','#FF8A00']]
+
+		colorscale = generateDiscreteColourScale(color_schemes)
+
+
+		fig_individual_heatmap = ff.create_annotated_heatmap(z,x=x,y=y, colorscale=colorscale,annotation_text=z_text)
+
+		st.plotly_chart(fig_individual_heatmap,use_container_width=True)
 
 
 
