@@ -521,7 +521,7 @@ if selected == 'Missing data':
 		df_merged_left.drop(columns=['date_added__rf3'], inplace=True)
 		df_merged_left.drop(columns=['Unnamed: 0__rf3'], inplace=True)
 		df_merged_left.drop(columns=['Unnamed: 0__covers'], inplace=True)
-		df_merged_left.drop(columns=['id_user__covers'], inplace=True)
+		#df_merged_left.drop(columns=['id_user__covers'], inplace=True)
 		df_merged_left.drop(columns=['id_user__rf3'], inplace=True)
 
 		df_merged_left.drop(columns=['index__covers'], inplace=True)
