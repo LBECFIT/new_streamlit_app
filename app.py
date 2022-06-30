@@ -512,10 +512,10 @@ if selected == 'Missing data':
 		###############################
 
 		df_merged_left = pd.merge(df_rf3, df_covers, how='left', 
-	    left_on=['id_company', 'date_waste', 'kitchen', 'shift'],
-	    right_on=['id_company', 'date_waste', 'kitchen', 'shift'],
-	    suffixes=("__rf3", "__covers"),
-	    copy=True
+	    	left_on=['id_company', 'date_waste', 'kitchen', 'shift'],
+	    	right_on=['id_company', 'date_waste', 'kitchen', 'shift'],
+	    	suffixes=("__rf3", "__covers"),
+	    	copy=True
 		)
 		df_merged_left.drop(columns=['id_waste'], inplace=True)
 		df_merged_left.drop(columns=['date_added__rf3'], inplace=True)
@@ -533,10 +533,10 @@ if selected == 'Missing data':
 		###############################
 
 		df_merged_right = pd.merge(df_rf3, df_covers, how='right', 
-	    left_on=['id_company', 'date_waste', 'kitchen', 'shift'],
-	    right_on=['id_company', 'date_waste', 'kitchen', 'shift'],
-	    suffixes=("__rf3", "__covers"),
-	    copy=True
+	    	left_on=['id_company', 'date_waste', 'kitchen', 'shift'],
+	    	right_on=['id_company', 'date_waste', 'kitchen', 'shift'],
+	    	suffixes=("__rf3", "__covers"),
+	    	copy=True
 		)
 		df_merged_right.drop(columns=['id_waste'], inplace=True)
 		df_merged_right.drop(columns=['date_added__rf3'], inplace=True)
