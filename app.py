@@ -13,10 +13,8 @@ from waste_graph_functions import *
 from list_weekly_kpis import *
 from impact_report_metrics import *
 
-df = pd.read_csv('df_covers.csv')
 
 st.title('New test app')
-st.dataframe(df)
 
 
 header = st.container()
@@ -49,105 +47,29 @@ with st.sidebar:
 	)
 
 
-	if selected == 'Activity Tracker':
+################################################################
+################################################################
+################################################################
+
+	if selected == 'Weekly KPIs':
+
+		with inactive_dataset:
 
 
+			headerColor = 'royalblue'
+			rowEvenColor = 'paleturquoise'
+			rowOddColor = 'white'
 
 
-		with header:
-			st.title('Activity Tracker')
+			fig_table = go.Figure(data=[go.Table(
+			    header=dict(values=['id_company','kitchen','status'],
+					fill_color='paleturquoise',
+					align='left'),
+			    cells=dict(values=[fit_inactive_this_month['id_company'], fit_inactive_this_month['kitchen'], fit_inactive_this_month['Current Type']],
+				       fill_color='lavender',
+				       align='left'))
+			])
 
+			fig_table.update_layout(title_text='Inactive users from last month')
 
-
-		with waste_dataset:
-			focus_company = st.text_input('Group you want to focus on', 'APAC')
-			df_rf3 = pd.read_csv('df_rf3.csv',sep=',')
-			df_rf3['date_waste'] = pd.to_datetime(df_rf3['date_waste']).dt.floor('d')
-			df_rf3['date_waste'] = pd.to_datetime(df_rf3['date_waste']).dt.date
-			df_rf3 = df_rf3[df_rf3['id_company'].str.startswith(focus_company, na = False)].reset_index()
-			weight_by_company_c = df_rf3.copy()
-			weight_by_company_c = weight_by_company_c.groupby(['id_company', 'date_waste','shift'])['weight'].sum().reset_index()
-
-			fig = go.Figure()
-
-			name = weight_by_company_c['id_company'].to_list()
-			name = list(set(name))
-			name2=['BEIGH','NAYRW','TAIGH','SOCAL','BANGH','GUAGH','CJUGH','SERLS']
-			L_bf = [True,False,False]
-			L_lunch = [False,True,False]
-			L_dinner = [False,False,True]
-			L_allshifts = [True,True,True]
-
-
-
-			dicoi = [dict(label="{}".format(name2[i]),method="update",args=[{"visible": true_false(i,name)},{"title": "{}".format(name[i])}])for i in range(len(name))]
-
-
-
-
-			for i in range(len(name)): 
-			    x_bf = weight_by_company_c[(weight_by_company_c['id_company']==name[i])&(weight_by_company_c['shift']=='Breakfast')]['date_waste'].to_list()
-			    y_bf = weight_by_company_c[(weight_by_company_c['id_company']==name[i])&(weight_by_company_c['shift']=='Breakfast')]['weight'].to_list()
-			    fig.add_trace(go.Bar(x=x_bf, y=y_bf, name=name2[i]+' Breakfast'))
-
-			    x_lunch = weight_by_company_c[(weight_by_company_c['id_company']==name[i])&(weight_by_company_c['shift']=='Lunch')]['date_waste'].to_list()
-			    y_lunch = weight_by_company_c[(weight_by_company_c['id_company']==name[i])&(weight_by_company_c['shift']=='Lunch')]['weight'].to_list()
-			    fig.add_trace(go.Bar(x=x_lunch, y=y_lunch, name=name2[i]+' Lunch'))
-
-			    x_dinner = weight_by_company_c[(weight_by_company_c['id_company']==name[i])&(weight_by_company_c['shift']=='Dinner')]['date_waste'].to_list()
-			    y_dinner = weight_by_company_c[(weight_by_company_c['id_company']==name[i])&(weight_by_company_c['shift']=='Dinner')]['weight'].to_list()
-			    fig.add_trace(go.Bar(x=x_dinner, y=y_dinner, name=name2[i]+' Dinner'))
-			    #fig.update_layout(barmode='grouped')
-
-			fig.update_layout(title = '{} graph of foodwaste over time (1st version)'.format('APAC'),
-			    updatemenus=[
-			        dict(
-			            active=0,
-			            buttons=list([
-			                dict(label="Breakfast",
-			                     method="update",
-			                     args=[{"visible": L_bf*len(name)},
-			                           {"title": "{} Breakfast".format('APAC')}]),
-			                dict(label="Lunch",
-			                     method="update",
-			                     args=[{"visible": L_lunch*len(name)},
-			                           {"title": "{} Lunch".format('APAC')}]),
-			                dict(label="Dinner",
-			                     method="update",
-			                     args=[{"visible": L_dinner*len(name)},
-			                           {"title": "{} Dinner".format('APAC')}]),
-			                dict(label="All shifts",
-			                     method="update",
-			                     args=[{"visible": L_allshifts*len(name)},
-			                           {"title": "{} all shifts".format('APAC')}])]+dicoi
-			            ),
-			        )
-			    ],
-			    xaxis=dict(
-			        rangeselector=dict(
-			            buttons=list([
-			                dict(count=7,
-			                     label="1 weeks",
-			                     step="day",
-			                     stepmode="backward"),
-			                dict(count=14,
-			                     label="2 weeks",
-			                     step="day",
-			                     stepmode="backward"),
-			                dict(count=1,
-			                     label="month",
-			                     step="month",
-			                     stepmode="todate"),
-			                dict(step="all")
-			            ])
-			        ),
-			        rangeslider=dict(
-			            visible=True
-			        ),
-			        type="date"
-			    ))
-			fig.update_yaxes(automargin=True)
-			fig.update_xaxes(automargin=True)
-
-
-			st.plotly_chart(fig,use_container_width=True)
+			st.plotly_chart(fig_table,use_container_width=True)
