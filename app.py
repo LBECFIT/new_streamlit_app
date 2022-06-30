@@ -734,8 +734,9 @@ if selected == 'Impact Report':
 	                    copy=True)
 
 	fit_raw_data =user_data_hbrand.copy()
+	st.dataframe(fit_raw_data)
 
-	fit_raw_data['id_company+kitchen']=fit_raw_data['id_company']+'__'+fit_raw_data['kitchen']
+	'''fit_raw_data['id_company+kitchen']=fit_raw_data['id_company']+'__'+fit_raw_data['kitchen']
 	user_data_hbrand['id_company+kitchen']=user_data_hbrand['id_company']+'__'+user_data_hbrand['kitchen']
 
 	################################### FILTERING RF3
@@ -1103,8 +1104,7 @@ if selected == 'Impact Report':
 
 	waste_byday_fig.update_traces(marker_color='thistle')
 
-	st.plotly_chart(waste_byday_fig,use_container_width=True)
-
+	st.plotly_chart(waste_byday_fig,use_container_width=True)'''
 
 
 
