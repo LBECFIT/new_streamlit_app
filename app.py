@@ -7,7 +7,7 @@ import plotly.figure_factory as ff
 from plotly.subplots import make_subplots
 import plotly.express as px
 
-df = pd.read_csv('df_covers_tar.csv')
+df = pd.read_csv('df_covers.csv')
 
 st.title('New test app')
 st.dataframe(df)
